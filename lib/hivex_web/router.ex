@@ -20,10 +20,11 @@ defmodule HivexWeb.Router do
     get "/", PageController, :home
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", HivexWeb do
-  #   pipe_through :api
-  # end
+  scope "/api/v1", HivexWeb do
+    pipe_through :api
+
+    resources "/users", UserController
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:hivex, :dev_routes) do
