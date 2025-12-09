@@ -1,0 +1,11 @@
+{
+  "info": {
+    "version": "0.0.1",
+    "title": "Hivex",
+    "basePath": "/api/v1/"
+  },
+  "host": "localhost:4000",
+  "definitions": {},
+  "paths": {},
+  "swagger": "2.0"
+}

@@ -26,6 +26,12 @@ defmodule HivexWeb.Router do
     resources "/users", UserController
   end
 
+  scope "/api/v1" do
+    forward "/swagger", PhoenixSwagger.Plug.SwaggerUI,
+      otp_app: :hivex,
+      swagger_file: "swagger.json"
+  end
+
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:hivex, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
@@ -41,5 +47,15 @@ defmodule HivexWeb.Router do
       live_dashboard "/dashboard", metrics: HivexWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  def swagger_info do
+    %{
+      info: %{
+        version: "0.0.1",
+        title: "Hivex",
+        basePath: "/api/v1/"
+      }
+    }
   end
 end
