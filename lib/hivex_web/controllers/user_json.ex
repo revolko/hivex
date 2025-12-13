@@ -19,7 +19,7 @@ defmodule HivexWeb.UserJSON do
     %{
       id: user.id,
       name: user.name,
-      emai: user.emai
+      email: user.email
     }
   end
 end

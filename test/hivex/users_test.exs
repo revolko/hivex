@@ -8,7 +8,7 @@ defmodule Hivex.UsersTest do
 
     import Hivex.UsersFixtures
 
-    @invalid_attrs %{name: nil, emai: nil}
+    @invalid_attrs %{name: nil, email: nil}
 
     test "list_users/0 returns all users" do
       user = user_fixture()
@@ -21,11 +21,11 @@ defmodule Hivex.UsersTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{name: "some name", emai: "some emai"}
+      valid_attrs = %{name: "some name", email: "some email"}
 
       assert {:ok, %User{} = user} = Users.create_user(valid_attrs)
       assert user.name == "some name"
-      assert user.emai == "some emai"
+      assert user.email == "some email"
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -34,11 +34,11 @@ defmodule Hivex.UsersTest do
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      update_attrs = %{name: "some updated name", emai: "some updated emai"}
+      update_attrs = %{name: "some updated name", email: "some updated email"}
 
       assert {:ok, %User{} = user} = Users.update_user(user, update_attrs)
       assert user.name == "some updated name"
-      assert user.emai == "some updated emai"
+      assert user.email == "some updated email"
     end
 
     test "update_user/2 with invalid data returns error changeset" do

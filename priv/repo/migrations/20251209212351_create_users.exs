@@ -4,7 +4,7 @@ defmodule Hivex.Repo.Migrations.CreateUsers do
   def change do
     create table(:users) do
       add :name, :string
-      add :emai, :string
+      add :email, :string
 
       timestamps(type: :utc_datetime)
     end

@@ -11,7 +11,7 @@ defmodule Hivex.UsersFixtures do
     {:ok, user} =
       attrs
       |> Enum.into(%{
-        emai: "some emai",
+        email: "some email",
         name: "some name"
       })
       |> Hivex.Users.create_user()

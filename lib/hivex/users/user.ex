@@ -4,7 +4,7 @@ defmodule Hivex.Users.User do
 
   schema "users" do
     field :name, :string
-    field :emai, :string
+    field :email, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -12,7 +12,7 @@ defmodule Hivex.Users.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :emai])
-    |> validate_required([:name, :emai])
+    |> cast(attrs, [:name, :email])
+    |> validate_required([:name, :email])
   end
 end
