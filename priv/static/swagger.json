@@ -5,7 +5,64 @@
     "basePath": "/api/v1/"
   },
   "host": "localhost:4000",
-  "definitions": {},
-  "paths": {},
+  "definitions": {
+    "Users": {
+      "description": "A collection of Users",
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "type": "array"
+        }
+      },
+      "title": "Users",
+      "type": "object"
+    },
+    "User": {
+      "description": "A user of the application",
+      "example": {
+        "email": "joe@random.com",
+        "name": "Joe"
+      },
+      "properties": {
+        "email": {
+          "description": "Users email",
+          "type": "string"
+        },
+        "name": {
+          "description": "Users name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "name"
+      ],
+      "title": "User",
+      "type": "object"
+    }
+  },
+  "paths": {
+    "/api/v1/users": {
+      "get": {
+        "description": "List all users",
+        "operationId": "HivexWeb.UserController.index",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "User"
+        ]
+      }
+    }
+  },
   "swagger": "2.0"
 }

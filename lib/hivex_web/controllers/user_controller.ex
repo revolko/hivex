@@ -1,10 +1,51 @@
 defmodule HivexWeb.UserController do
   use HivexWeb, :controller
+  use PhoenixSwagger
 
   alias Hivex.Users
   alias Hivex.Users.User
 
   action_fallback HivexWeb.FallbackController
+
+  def swagger_definitions do
+    %{
+      User:
+        swagger_schema do
+          title("User")
+          description("A user of the application")
+
+          properties do
+            name(:string, "Users name", required: true)
+            email(:string, "Users email", required: true)
+          end
+
+          example(%{
+            name: "Joe",
+            email: "joe@random.com"
+          })
+        end,
+      Users:
+        swagger_schema do
+          title("Users")
+          description("A collection of Users")
+
+          properties do
+            data(
+              Schema.new do
+                type(:array)
+                items(Schema.ref(:User))
+              end
+            )
+          end
+        end
+    }
+  end
+
+  swagger_path "index" do
+    get("/api/v1/users")
+    description("List all users")
+    response(200, "Success", Schema.ref(:Users))
+  end
 
   def index(conn, _params) do
     users = Users.list_users()
