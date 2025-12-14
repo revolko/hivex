@@ -9,7 +9,7 @@ import Config
 
 config :hivex,
   ecto_repos: [Hivex.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime, api_prefix: "/api/v1"]
 
 # Configure the endpoint
 config :hivex, HivexWeb.Endpoint,
