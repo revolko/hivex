@@ -24,6 +24,7 @@ defmodule HivexWeb.Router do
     pipe_through :api
 
     resources "/users", UserController
+    resources "/services", ServiceController, except: [:new, :edit]
   end
 
   scope "/api/v1" do

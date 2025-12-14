@@ -6,19 +6,6 @@
   },
   "host": "localhost:4000",
   "definitions": {
-    "Users": {
-      "description": "A collection of Users",
-      "properties": {
-        "data": {
-          "items": {
-            "$ref": "#/definitions/User"
-          },
-          "type": "array"
-        }
-      },
-      "title": "Users",
-      "type": "object"
-    },
     "User": {
       "description": "A user of the application",
       "example": {
@@ -40,6 +27,19 @@
         "name"
       ],
       "title": "User",
+      "type": "object"
+    },
+    "Users": {
+      "description": "A collection of Users",
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "type": "array"
+        }
+      },
+      "title": "Users",
       "type": "object"
     }
   },
