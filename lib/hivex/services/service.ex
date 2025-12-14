@@ -4,6 +4,7 @@ defmodule Hivex.Services.Service do
 
   schema "services" do
     field :name, :string
+    belongs_to :user, Hivex.Users.User
 
     timestamps(type: :utc_datetime)
   end
