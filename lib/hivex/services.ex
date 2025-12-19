@@ -7,6 +7,7 @@ defmodule Hivex.Services do
   alias Hivex.Repo
 
   alias Hivex.Services.Service
+  alias Hivex.Users.User
 
   @doc """
   Returns the list of services.
@@ -19,6 +20,7 @@ defmodule Hivex.Services do
   """
   def list_services do
     Repo.all(Service)
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -49,9 +51,12 @@ defmodule Hivex.Services do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_service(attrs) do
+  def create_service(%{"user_id" => user_id} = attrs) do
+    user = Repo.get!(User, user_id)
+
     %Service{}
     |> Service.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
   end
 

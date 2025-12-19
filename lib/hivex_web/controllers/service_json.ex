@@ -18,7 +18,11 @@ defmodule HivexWeb.ServiceJSON do
   defp data(%Service{} = service) do
     %{
       id: service.id,
-      name: service.name
+      name: service.name,
+      user: %{
+        id: service.user.id,
+        name: service.user.name
+      }
     }
   end
 end
