@@ -1,0 +1,17 @@
+@baseUrl = http://127.0.0.1:4000/api/v1
+
+### list users
+GET {{baseUrl}}/users
+Accept: application/json
+
+
+### create user
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "user": {
+    "name": "ja",
+    "email": "ja@ja.ja"
+  }
+}
