@@ -25,6 +25,7 @@ defmodule HivexWeb.Router do
 
     resources "/users", UserController
     resources "/services", ServiceController, except: [:new, :edit]
+    resources "/containers", ContainerController, only: [:index, :delete]
   end
 
   scope "/api/v1" do
