@@ -66,7 +66,8 @@ defmodule Hivex.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:phoenix_swagger, "~> 0.8"}
+      {:phoenix_swagger, "~> 0.8"},
+      {:docker_ex, git: "https://github.com/revolko/docker_ex.git"}
     ]
   end
 
