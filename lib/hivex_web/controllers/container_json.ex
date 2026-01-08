@@ -3,7 +3,7 @@ defmodule HivexWeb.ContainerJSON do
   Renders a list of containers.
   """
   def index(%{containers: containers}) do
-    %{data: for(container <- containers, do: data(container))}
+    %{data: for(container <- containers, do: data(container, simple: true))}
   end
 
   @doc """
@@ -13,10 +13,14 @@ defmodule HivexWeb.ContainerJSON do
     %{data: data(container)}
   end
 
-  defp data(container) do
-    %{
-      "id" => container["Id"],
-      "name" => container["Names"]
-    }
+  defp data(container, simple \\ false) do
+    if simple do
+      %{
+        "Id" => container["Id"],
+        "Names" => container["Names"]
+      }
+    else
+      container
+    end
   end
 end
