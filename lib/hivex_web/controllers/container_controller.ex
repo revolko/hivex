@@ -15,10 +15,10 @@ defmodule HivexWeb.ContainerController do
     render(conn, :index, containers: containers)
   end
 
-  # def show(conn, %{"id" => id}) do
-  #   container = Containers.get_container!(id)
-  #   render(conn, :show, container: container)
-  # end
+  def show(conn, %{"id" => id}) do
+    {:ok, container} = Containers.inspect_container(id)
+    render(conn, :show, container: container)
+  end
 
   def delete(conn, %{"id" => id}) do
     with {:ok, _} <- Containers.delete_container(id) do

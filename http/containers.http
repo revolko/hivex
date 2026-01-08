@@ -8,6 +8,9 @@ Accept: application/json
 GET {{baseUrl}}/containers?all=true
 Accept: application/json
 
+### inspect container
+GET {{baseUrl}}/containers/test-container
+Accept: application/json
 
 ### delete container
 DELETE {{baseUrl}}/containers/test-container
