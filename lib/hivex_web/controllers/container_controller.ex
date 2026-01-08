@@ -8,7 +8,7 @@ defmodule HivexWeb.ContainerController do
 
   def index(conn, params) do
     {:ok, containers} =
-      Containers.get_containers(
+      Containers.list_containers(
         Enum.map(params, fn {key, value} -> {String.to_existing_atom(key), value} end)
       )
 
