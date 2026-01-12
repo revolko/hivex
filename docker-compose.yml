@@ -11,5 +11,13 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  proxy:
+    image: nginx
+    volumes:
+      - type: bind
+        source: ./proxy
+        target: /etc/nginx/conf.d
+    ports:
+      - 80:80
 volumes:
   pgdata:
