@@ -15,6 +15,18 @@ defmodule HivexWeb.ContainerController do
     render(conn, :index, containers: containers)
   end
 
+  def create(conn, %{"container" => container_params}) do
+    with {:ok, %{"Id" => container_id}} <-
+           Containers.create_container(
+             %Containers.CreateContainer{Image: container_params["image"]},
+             name: container_params["name"]
+           ),
+         {:ok, _} <- Containers.start_container(container_id),
+         {:ok, container} <- Containers.inspect_container(container_id) do
+      render(conn, :show, container: container)
+    end
+  end
+
   def show(conn, %{"id" => id}) do
     {:ok, container} = Containers.inspect_container(id)
     render(conn, :show, container: container)

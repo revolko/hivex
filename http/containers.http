@@ -12,6 +12,17 @@ Accept: application/json
 GET {{baseUrl}}/containers/test-container
 Accept: application/json
 
+### create container
+POST {{baseUrl}}/containers
+Content-Type: application/json
+
+{
+  "container": {
+    "name": "test-container",
+    "image": "fedora"
+  }
+}
+
 ### delete container
 DELETE {{baseUrl}}/containers/test-container
 
