@@ -73,6 +73,9 @@ config :hivex, :phoenix_swagger,
 
 config :phoenix_swagger, json_library: Jason
 
+# custom global
+config :hivex, Hivex.Nginx, config_file: "/etc/nginx/default.conf"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

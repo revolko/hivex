@@ -5,8 +5,11 @@ defmodule Hivex.Nginx do
   TODO: move most of the parameters to config
   """
   alias DockerEx.Exec
+  @module_config Application.compile_env(:hivex, __MODULE__)
 
-  def add_server(config_file, server_name, location, container_name, container_port) do
+  def add_server(server_name, container_name, container_port, location \\ "/") do
+    config_file = @module_config[:config_file]
+
     server_conf =
       "server {" <>
         "listen 80;server_name #{server_name}; location #{location} {" <>
