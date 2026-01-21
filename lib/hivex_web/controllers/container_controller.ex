@@ -3,8 +3,11 @@ defmodule HivexWeb.ContainerController do
   require Logger
 
   alias DockerEx.Containers
+  alias Hivex.Nginx
 
   action_fallback HivexWeb.FallbackController
+
+  @hivex_config Application.compile_env!(:hivex, Hivex)
 
   def index(conn, params) do
     {:ok, containers} =
@@ -15,16 +18,33 @@ defmodule HivexWeb.ContainerController do
     render(conn, :index, containers: containers)
   end
 
-  def create(conn, %{"container" => container_params}) do
-    with {:ok, %{"Id" => container_id}} <-
-           Containers.create_container(
-             %Containers.CreateContainer{Image: container_params["image"]},
-             name: container_params["name"]
-           ),
-         {:ok, _} <- Containers.start_container(container_id),
-         {:ok, container} <- Containers.inspect_container(container_id) do
-      render(conn, :show, container: container)
-    end
+  def create(conn, %{"container" => container_params, "nginx_conf" => nginx_conf}) do
+    nginx_network = @hivex_config[:docker_network]
+
+    # TODO: better error handling
+    {:ok, container} =
+      with {:ok, %{"Id" => container_id}} <-
+             Containers.create_container(
+               %Containers.CreateContainer{
+                 Image: container_params["image"],
+                 NetworkingConfig: %{"EndpointsConfig" => %{nginx_network => %{}}},
+                 HostConfig: %{
+                   "PortBindings" => %{
+                     container_params["exposed_port"] => [
+                       %{"HostIp" => "127.0.0.1", "HostPort" => container_params["host_port"]}
+                     ]
+                   }
+                 },
+                 Env: container_params["env"]
+               },
+               name: container_params["name"]
+             ),
+           {:ok, _} <- Containers.start_container(container_id),
+           do: Containers.inspect_container(container_id)
+
+    Nginx.add_server("_", nginx_conf["listen_port"], container_params["host_port"])
+    Nginx.reload_server({:docker, "hivex-proxy-1"})
+    render(conn, :show, container: container)
   end
 
   def show(conn, %{"id" => id}) do

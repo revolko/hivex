@@ -19,7 +19,13 @@ Content-Type: application/json
 {
   "container": {
     "name": "test-container",
-    "image": "fedora"
+    "image": "recipes-rs",
+    "host_port": "8080",
+    "exposed_port": "8080/tcp",
+    "env": ["DATABASE_URL=postgres://postgres:postgres@hivex-postgres-1/postgres"]
+  },
+  "nginx_conf": {
+    "listen_port": "7080"
   }
 }
 
