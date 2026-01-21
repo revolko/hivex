@@ -15,9 +15,8 @@ services:
     image: nginx
     volumes:
       - type: bind
-        source: ./proxy
+        source: /etc/nginx/
         target: /etc/nginx/conf.d
-    ports:
-      - 80:80
+    network_mode: host
 volumes:
   pgdata:
