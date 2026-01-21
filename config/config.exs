@@ -74,6 +74,8 @@ config :hivex, :phoenix_swagger,
 config :phoenix_swagger, json_library: Jason
 
 # custom global
+config :hivex, Hivex, docker_network: "hivex_default"
+
 config :hivex, Hivex.Nginx, config_file: "/etc/nginx/default.conf"
 
 # Import environment specific config. This must remain at the bottom
