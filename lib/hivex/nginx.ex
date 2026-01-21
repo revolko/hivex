@@ -7,13 +7,13 @@ defmodule Hivex.Nginx do
   alias DockerEx.Exec
   @module_config Application.compile_env(:hivex, __MODULE__)
 
-  def add_server(server_name, container_name, container_port, location \\ "/") do
+  def add_server(server_name, nginx_port, container_port, location \\ "/") do
     config_file = @module_config[:config_file]
 
     server_conf =
       "server {" <>
-        "listen 80;server_name #{server_name}; location #{location} {" <>
-        "proxy_pass http:://#{container_name}:#{container_port};}}\n"
+        "listen #{nginx_port};server_name #{server_name}; location #{location} {" <>
+        "proxy_pass http://127.0.0.1:#{container_port};}}\n"
 
     with {:ok, file} <- File.open(config_file, [:append]) do
       IO.binwrite(file, server_conf)
