@@ -69,7 +69,7 @@ defmodule Hivex.MixProject do
       {:phoenix_swagger, "~> 0.8"},
       {:docker_ex,
        git: "https://github.com/revolko/docker_ex.git",
-       ref: "ebbfff4124c2843af987fdb033721d7a29bee5f7"}
+       ref: "af5e79342769354a0761ad9e566765c4968e7858"}
     ]
   end
 
