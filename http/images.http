@@ -1,0 +1,24 @@
+@baseUrl = http://127.0.0.1:4000/api/v1
+
+### list images
+GET {{baseUrl}}/images
+Accept: application/json
+
+### pull image 
+POST {{baseUrl}}/images/pull
+Content-Type: application/json
+
+{
+  "from_image": "fedora",
+  "tag": "41"
+}
+
+### build image 
+POST {{baseUrl}}/images/build
+Content-Type: application/json
+
+{
+  "remote_url": "https://github.com/revolko/vegetation.git",
+  "name": "test-image",
+  "tag": "41"
+}
