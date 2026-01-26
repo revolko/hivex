@@ -56,7 +56,7 @@ defmodule HivexWeb.ContainerController do
     with {:ok, _} <- Containers.delete_container(id) do
       send_resp(conn, :no_content, "")
     else
-      {:error, <<status_code::binary-size(3), " ", error_message::binary>>} ->
+      {:error, {status_code, error_message, _details}} ->
         send_resp(conn, String.to_integer(status_code), error_message)
     end
   end
