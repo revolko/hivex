@@ -9,7 +9,7 @@ GET {{baseUrl}}/containers?all=true
 Accept: application/json
 
 ### inspect container
-GET {{baseUrl}}/containers/test-container
+GET {{baseUrl}}/containers/9
 Accept: application/json
 
 ### create container
@@ -19,16 +19,16 @@ Content-Type: application/json
 {
   "container": {
     "name": "test-container",
-    "image": "recipes-rs",
+    "image_name": "recipes-rs",
     "host_port": "8080",
-    "exposed_port": "8080/tcp",
+    "container_port": "8080/tcp",
+    "proxy_port": "7080",
     "env": ["DATABASE_URL=postgres://postgres:postgres@hivex-postgres-1/postgres"]
-  },
-  "nginx_conf": {
-    "listen_port": "7080"
   }
 }
 
 ### delete container
-DELETE {{baseUrl}}/containers/test-container
+DELETE {{baseUrl}}/containers/2
 
+### force delete container
+DELETE {{baseUrl}}/containers/8?force=true

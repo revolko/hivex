@@ -4,60 +4,62 @@ defmodule HivexWeb.ContainerController do
 
   alias DockerEx.Containers
   alias Hivex.Nginx
+  alias Hivex.Containers, as: DbContainers
+  alias Hivex.Containers.Container, as: DbContainer
 
   action_fallback HivexWeb.FallbackController
 
   @hivex_config Application.compile_env!(:hivex, Hivex)
 
-  def index(conn, params) do
-    {:ok, containers} =
-      Containers.list_containers(
-        Enum.map(params, fn {key, value} -> {String.to_existing_atom(key), value} end)
-      )
-
+  def index(conn, _params) do
+    containers = DbContainers.list_containers()
     render(conn, :index, containers: containers)
   end
 
-  def create(conn, %{"container" => container_params, "nginx_conf" => nginx_conf}) do
+  def create(conn, %{"container" => container_params}) do
     nginx_network = @hivex_config[:docker_network]
-
     # TODO: better error handling
-    {:ok, container} =
-      with {:ok, %{"Id" => container_id}} <-
-             Containers.create_container(
-               %Containers.CreateContainer{
-                 Image: container_params["image"],
-                 NetworkingConfig: %{"EndpointsConfig" => %{nginx_network => %{}}},
-                 HostConfig: %{
-                   "PortBindings" => %{
-                     container_params["exposed_port"] => [
-                       %{"HostIp" => "127.0.0.1", "HostPort" => container_params["host_port"]}
-                     ]
-                   }
-                 },
-                 Env: container_params["env"]
+    with {:ok, %DbContainer{} = container} <- DbContainers.create_container(container_params),
+         {:ok, %{"Id" => container_id}} <-
+           Containers.create_container(
+             %Containers.CreateContainer{
+               Image: container.image_name,
+               NetworkingConfig: %{"EndpointsConfig" => %{nginx_network => %{}}},
+               HostConfig: %{
+                 "PortBindings" => %{
+                   container.container_port => [
+                     %{"HostIp" => "127.0.0.1", "HostPort" => container.host_port}
+                   ]
+                 }
                },
-               name: container_params["name"]
-             ),
-           {:ok, _} <- Containers.start_container(container_id),
-           do: Containers.inspect_container(container_id)
-
-    Nginx.add_server("_", nginx_conf["listen_port"], container_params["host_port"])
-    Nginx.reload_server({:docker, "hivex-proxy-1"})
-    render(conn, :show, container: container)
+               Env: container_params["env"]
+             },
+             name: container.name
+           ),
+         {:ok, _} <- Containers.start_container(container_id),
+         :ok <- Nginx.update_nginx_config(),
+         do: render(conn, :show, container: container)
   end
 
   def show(conn, %{"id" => id}) do
-    {:ok, container} = Containers.inspect_container(id)
+    container = DbContainers.get_container!(id)
     render(conn, :show, container: container)
   end
 
-  def delete(conn, %{"id" => id}) do
-    with {:ok, _} <- Containers.delete_container(id) do
+  def delete(conn, %{"id" => id} = params) do
+    force = Map.get(params, "force", "false")
+
+    with %DbContainer{} = container <- DbContainers.get_container(id),
+         {:ok, _} <- Containers.delete_container(container.name, force: force),
+         {:ok, _} <- DbContainers.delete_container(container),
+         :ok <- Nginx.update_nginx_config() do
       send_resp(conn, :no_content, "")
     else
-      {:error, {status_code, error_message, _details}} ->
-        send_resp(conn, String.to_integer(status_code), error_message)
+      nil ->
+        send_resp(conn, :not_found, "Container not found")
+
+      {:error, error} ->
+        send_resp(conn, :internal_server_error, error)
     end
   end
 end
