@@ -23,8 +23,6 @@ defmodule HivexWeb.Router do
   scope "/api/v1", HivexWeb do
     pipe_through :api
 
-    resources "/users", UserController
-    resources "/services", ServiceController, except: [:new, :edit]
     resources "/containers", ContainerController, only: [:index, :show, :create, :delete]
     resources "/images", ImageController, only: [:index]
     post "/images/pull", ImageController, :pull
