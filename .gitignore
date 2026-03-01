@@ -35,3 +35,5 @@ hivex-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# custom helpers
+/_helpers/
