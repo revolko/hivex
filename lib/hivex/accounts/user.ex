@@ -10,6 +10,8 @@ defmodule Hivex.Accounts.User do
     field :authenticated_at, :utc_datetime, virtual: true
     field :super, :boolean
 
+    has_many :containers, Hivex.Containers.Container
+
     timestamps(type: :utc_datetime)
   end
 

@@ -7,6 +7,7 @@ defmodule Hivex.Containers do
   alias Hivex.Repo
 
   alias Hivex.Containers.Container
+  alias Hivex.Accounts.User
 
   @doc """
   Return the list of containers
@@ -25,13 +26,14 @@ defmodule Hivex.Containers do
 
   ## Examples
 
-      iex> get_container(123)
+      iex> get_container(123, %User{})
       %Container{}
 
-      iex> get_container(456)
+      iex> get_container(456, %User{})
       nill
   """
-  def get_container(id), do: Repo.get(Container, id)
+  def get_container(id, %User{} = user),
+    do: Repo.get_by(Container, id: id, user_id: user.id)
 
   @doc """
   Gets a single container
@@ -40,13 +42,14 @@ defmodule Hivex.Containers do
 
   ## Examples
 
-      iex> get_container!(123)
+      iex> get_container!(123, %User{})
       %Container{}
 
-      iex> get_container!(456)
+      iex> get_container!(456, %User{})
       ** (Ecto.NoResultsError)
   """
-  def get_container!(id), do: Repo.get!(Container, id)
+  def get_container!(id, %User{} = user),
+    do: Repo.get_by!(Container, id: id, user_id: user.id)
 
   @doc """
   Creates a container.
@@ -59,14 +62,14 @@ defmodule Hivex.Containers do
         host_port: "8080/tcp",
         container_port: "8080/tcp",
         proxy_port: "7080"
-      })
+      }, %User{})
       {:ok, %Container{}}
 
       iex> create_container(%{name: "name"})
       {:error, %Ecto.Changeset{}}
   """
-  def create_container(attrs) do
-    %Container{} |> Container.changeset(attrs) |> Repo.insert()
+  def create_container(attrs, %User{} = user) do
+    %Container{} |> Container.changeset(attrs, user) |> Repo.insert()
   end
 
   @doc """
@@ -74,14 +77,14 @@ defmodule Hivex.Containers do
 
   ## Examples
 
-      iex> update_container(container, %{name: "new_name"})
+      iex> update_container(container, %{name: "new_name"}, %User{})
       {:ok, %Container{}}
 
-      iex> update_container(container, %{name: 1})
+      iex> update_container(container, %{name: 1}, %User{})
       {:error, %Ecto.Changeset{}}
   """
-  def update_container(%Container{} = container, attrs) do
-    container |> Container.changeset(attrs) |> Repo.update()
+  def update_container(%Container{} = container, attrs, %User{} = user) do
+    container |> Container.changeset(attrs, user) |> Repo.update()
   end
 
   @doc """
@@ -107,7 +110,7 @@ defmodule Hivex.Containers do
       iex> change_container(container)
       %Ecto.Changeset{data: %Container{}}
   """
-  def change_container(%Container{} = container, attrs \\ %{}) do
-    Container.changeset(container, attrs)
+  def change_container(%Container{} = container, attrs \\ %{}, %User{} = user) do
+    Container.changeset(container, attrs, user)
   end
 end

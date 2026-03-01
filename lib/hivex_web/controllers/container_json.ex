@@ -22,7 +22,8 @@ defmodule HivexWeb.ContainerJSON do
       image_name: container.image_name,
       host_port: container.host_port,
       container_port: container.container_port,
-      proxy_port: container.proxy_port
+      proxy_port: container.proxy_port,
+      user_id: container.user_id
     }
   end
 

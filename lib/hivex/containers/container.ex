@@ -9,13 +9,17 @@ defmodule Hivex.Containers.Container do
     field :container_port, :string
     field :proxy_port, :string
 
+    belongs_to :user, Hivex.Accounts.User
+
     timestamps(type: :utc_datetime)
   end
 
   @doc false
-  def changeset(container, attrs) do
+  def changeset(container, attrs, user) do
     container
     |> cast(attrs, [:name, :image_name, :host_port, :container_port, :proxy_port])
     |> validate_required([:name, :image_name, :host_port, :container_port, :proxy_port])
+    |> put_change(:user_id, user.id)
+    |> assoc_constraint(:user)
   end
 end

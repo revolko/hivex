@@ -17,9 +17,13 @@ defmodule HivexWeb.ContainerController do
   end
 
   def create(conn, %{"container" => container_params}) do
+    user = Guardian.Plug.current_resource(conn)
     nginx_network = @hivex_config[:docker_network]
     # TODO: better error handling
-    with {:ok, %DbContainer{} = container} <- DbContainers.create_container(container_params),
+    container_params = Map.put(container_params, "user_id", user.id)
+
+    with {:ok, %DbContainer{} = container} <-
+           DbContainers.create_container(container_params, user),
          {:ok, %{"Id" => container_id}} <-
            Containers.create_container(
              %Containers.CreateContainer{
@@ -42,14 +46,16 @@ defmodule HivexWeb.ContainerController do
   end
 
   def show(conn, %{"id" => id}) do
-    container = DbContainers.get_container!(id)
+    user = Guardian.Plug.current_resource(conn)
+    container = DbContainers.get_container!(id, user)
     render(conn, :show, container: container)
   end
 
   def delete(conn, %{"id" => id} = params) do
+    user = Guardian.Plug.current_resource(conn)
     force = Map.get(params, "force", "false")
 
-    with %DbContainer{} = container <- DbContainers.get_container(id),
+    with %DbContainer{} = container <- DbContainers.get_container(id, user),
          {:ok, _} <- Containers.delete_container(container.name, force: force),
          {:ok, _} <- DbContainers.delete_container(container),
          :ok <- Nginx.update_nginx_config() do
