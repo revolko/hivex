@@ -49,6 +49,7 @@ defmodule HivexWeb.Router do
     pipe_through [:api]
 
     post "/users/log-in", UserSessionController, :create
+    get "/users/log-in/:token", UserSessionController, :create
     post "/users/register", UserRegistrationController, :create
   end
 

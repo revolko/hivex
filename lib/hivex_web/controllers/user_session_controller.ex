@@ -4,7 +4,7 @@ defmodule HivexWeb.UserSessionController do
   alias Hivex.{Accounts, Accounts.Guardian}
 
   # magic link login
-  def create(conn, %{"user" => %{"token" => token}}) do
+  def create(conn, %{"token" => token}) do
     with {:ok, {user, _expired_tokens}} <- Accounts.login_user_by_magic_link(token),
          {:ok, token, _full_claims} <- Guardian.encode_and_sign(user) do
       conn

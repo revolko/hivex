@@ -53,9 +53,7 @@ defmodule HivexWeb.UserSessionControllerTest do
       {token, _hashed_token} = generate_user_magic_link_token(user)
 
       conn =
-        post(conn, ~p"/api/v1/users/log-in", %{
-          "user" => %{"token" => token}
-        })
+        post(conn, ~p"/api/v1/users/log-in", %{"token" => token})
 
       actual_response = json_response(conn, :created)
       assert actual_response["token"]
@@ -66,9 +64,7 @@ defmodule HivexWeb.UserSessionControllerTest do
       refute user.confirmed_at
 
       conn =
-        post(conn, ~p"/api/v1/users/log-in", %{
-          "user" => %{"token" => token}
-        })
+        post(conn, ~p"/api/v1/users/log-in", %{"token" => token})
 
       assert Accounts.get_user!(user.id).confirmed_at
       actual_response = json_response(conn, :created)
@@ -81,9 +77,7 @@ defmodule HivexWeb.UserSessionControllerTest do
       }
 
       conn =
-        post(conn, ~p"/api/v1/users/log-in", %{
-          "user" => %{"token" => "invalid"}
-        })
+        post(conn, ~p"/api/v1/users/log-in", %{"token" => "invalid"})
 
       actual_response = json_response(conn, :unauthorized)
       assert actual_response["errors"]
