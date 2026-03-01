@@ -9,7 +9,7 @@ config :hivex, HivexWeb.Endpoint, cache_static_manifest: "priv/static/cache_mani
 
 # Force using SSL in production. This also sets the "strict-security-transport" header,
 # also known as HSTS. `:force_ssl` is required to be set at compile-time.
-config :hivex, HivexWeb.Endpoint, force_ssl: [rewrite_on: [:x_forwarded_proto]]
+# config :hivex, HivexWeb.Endpoint, force_ssl: [rewrite_on: [:x_forwarded_proto]]
 
 # Configure Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Req
