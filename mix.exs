@@ -40,6 +40,7 @@ defmodule Hivex.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.8.2"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.13"},
@@ -69,7 +70,11 @@ defmodule Hivex.MixProject do
       {:phoenix_swagger, "~> 0.8"},
       {:docker_ex,
        git: "https://github.com/revolko/docker_ex.git",
-       ref: "af5e79342769354a0761ad9e566765c4968e7858"}
+       ref: "af5e79342769354a0761ad9e566765c4968e7858"},
+      {:multipart, "~> 0.6"},
+      {:plug, "~> 1.19"},
+      {:hackney, "~> 1.9"},
+      {:guardian, "~> 2.4.0"}
     ]
   end
 

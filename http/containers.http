@@ -1,8 +1,10 @@
 @baseUrl = http://127.0.0.1:4000/api/v1
+@bearer_token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJoaXZleCIsImV4cCI6MTc3MzI2MDQ2MywiaWF0IjoxNzcwODQxMjYzLCJpc3MiOiJoaXZleCIsImp0aSI6IjYxYjcwZjc4LWI2NTQtNDU5MC1iNmU1LWRjOGQyYWE1OWM3NSIsIm5iZiI6MTc3MDg0MTI2Miwic3ViIjoiMiIsInR5cCI6ImFjY2VzcyJ9.zm6tHm3IgNI2T3x9NqR1QKwp6VgQWYqCD3fOZbW-SEzIxnyyYcSZAFy5VHkuLTmErjsSGCSOvQFXd1Vgx_6jWA
 
 ### list active containers
 GET {{baseUrl}}/containers
 Accept: application/json
+Authorization: Bearer {{bearer_token}}
 
 ### list all containers
 GET {{baseUrl}}/containers?all=true

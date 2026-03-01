@@ -7,6 +7,19 @@
 # General application configuration
 import Config
 
+config :hivex, :scopes,
+  user: [
+    default: true,
+    module: Hivex.Accounts.Scope,
+    assign_key: :current_scope,
+    access_path: [:user, :id],
+    schema_key: :user_id,
+    schema_type: :id,
+    schema_table: :users,
+    test_data_fixture: Hivex.AccountsFixtures,
+    test_setup_helper: :register_and_log_in_user
+  ]
+
 config :hivex,
   ecto_repos: [Hivex.Repo],
   generators: [timestamp_type: :utc_datetime, api_prefix: "/api/v1"]
@@ -77,6 +90,11 @@ config :phoenix_swagger, json_library: Jason
 config :hivex, Hivex, docker_network: "hivex_default"
 
 config :hivex, Hivex.Nginx, config_file: "/etc/nginx/default.conf"
+
+# in prod the secret_key_base is used as secret key
+config :hivex, Hivex.Accounts.Guardian,
+  issuer: "hivex",
+  secret_key: "U5T3yUH4PFq8vhLjrn95LyKjg-Y9t4jcKx7fKk8AF8nrAQzMKqnAKmUNDwuANupl"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

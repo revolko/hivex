@@ -1,17 +1,46 @@
 @baseUrl = http://127.0.0.1:4000/api/v1
+@bearer_token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJoaXZleCIsImV4cCI6MTc3MzI2MDQ2MywiaWF0IjoxNzcwODQxMjYzLCJpc3MiOiJoaXZleCIsImp0aSI6IjYxYjcwZjc4LWI2NTQtNDU5MC1iNmU1LWRjOGQyYWE1OWM3NSIsIm5iZiI6MTc3MDg0MTI2Miwic3ViIjoiMiIsInR5cCI6ImFjY2VzcyJ9.zm6tHm3IgNI2T3x9NqR1QKwp6VgQWYqCD3fOZbW-SEzIxnyyYcSZAFy5VHkuLTmErjsSGCSOvQFXd1Vgx_6jWA
+@confirm_token = 8Kobr_ReFFFkh1vEO-GK59kJ9_mO3J-9-UnMn8Fit20
+@email_confirm_token = GbqFo9eiK40LmsemvrYmzjfpB3TaNPGsJyIHOqcarjk
 
 ### list users
 GET {{baseUrl}}/users
 Accept: application/json
 
+### send magic link register request
+POST {{baseUrl}}/users/register
+Content-Type: application/x-www-form-urlencoded
 
-### create user
-POST {{baseUrl}}/users
-Content-Type: application/json
+user[email]=juraj.palubajp@gmail.com
 
-{
-  "user": {
-    "name": "ja",
-    "email": "ja@ja.ja"
-  }
-}
+### send magic link login request
+POST {{baseUrl}}/users/log-in
+Content-Type: application/x-www-form-urlencoded
+
+user[email]=juraj.palubajp@gmail.com
+
+### confirm email
+GET {{baseUrl}}/users/log-in/{{confirm_token}}
+Accept: application/json
+
+### update user password
+PUT {{baseUrl}}/users/settings
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/x-www-form-urlencoded
+
+action=update_password&user[password]=v!zPCufWlp#$FB*!6y5JRy95&nf#&J8T&K9eSBO7Rz3@@Rlw7Az!u&5H0nnikgY!kwh4r&user[password_confirmation]=v!zPCufWlp#$FB*!6y5JRy95&nf#&J8T&K9eSBO7Rz3@@Rlw7Az!u&5H0nnikgY!kwh4r
+
+### update user email
+PUT {{baseUrl}}/users/settings
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/x-www-form-urlencoded
+
+action=update_email&user[email]=juraj.palubajp@gmail.com
+
+### confirm udpated email
+GET {{baseUrl}}/users/settings/confirm-email/{{email_confirm_token}}
+Authorization: Bearer {{bearer_token}}
+
+### log out user
+DELETE {{baseUrl}}/users/log-out
+Authorization: Bearer {{bearer_token}}

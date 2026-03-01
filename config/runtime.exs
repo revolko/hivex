@@ -113,4 +113,18 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Req
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+
+  smtp_api_key = System.get_env("SMTP_API_KEY") || raise "SMTP_API_KEY is missing"
+  smtp_domain = System.get_env("SMTP_DOMAIN") || raise "SMTP_DOMAIN is missing"
+  smtp_base_url = System.get_env("SMTP_BASE_URL") || raise "SMTP_BASE_URL is missing"
+
+  config :hivex, Hivex.Mailer,
+    adapter: Swoosh.Adapters.Mailgun,
+    api_key: smtp_api_key,
+    domain: smtp_domain,
+    base_url: smtp_base_url
+
+  config :hivex, Hivex.Accounts.Guardian,
+    issuer: "hivex",
+    secret_key: secret_key_base
 end

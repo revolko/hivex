@@ -14,6 +14,17 @@ defmodule HivexWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :ensure_auth do
+    plug Guardian.Plug.Pipeline,
+      otp_app: :hivex,
+      module: Hivex.Accounts.Guardian,
+      error_handler: Hivex.Accounts.ErrorHandler
+
+    plug Guardian.Plug.VerifySession
+    plug Guardian.Plug.VerifyHeader
+    plug Guardian.Plug.EnsureAuthenticated
+  end
+
   scope "/", HivexWeb do
     pipe_through :browser
 
@@ -21,12 +32,24 @@ defmodule HivexWeb.Router do
   end
 
   scope "/api/v1", HivexWeb do
-    pipe_through :api
+    pipe_through [:api, :ensure_auth]
+
+    # api auth
+    put "/users/settings", UserSettingsController, :update
+    get "/users/settings/confirm-email/:token", UserSettingsController, :confirm_email
+    delete "/users/log-out", UserSessionController, :delete
 
     resources "/containers", ContainerController, only: [:index, :show, :create, :delete]
     resources "/images", ImageController, only: [:index]
     post "/images/pull", ImageController, :pull
     post "/images/build", ImageController, :build
+  end
+
+  scope "/api/v1", HivexWeb do
+    pipe_through [:api]
+
+    post "/users/log-in", UserSessionController, :create
+    post "/users/register", UserRegistrationController, :create
   end
 
   scope "/api/v1" do

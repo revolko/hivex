@@ -17,6 +17,8 @@ defmodule HivexWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias Hivex.Accounts.Guardian
+
   using do
     quote do
       # The default endpoint for testing
@@ -34,5 +36,38 @@ defmodule HivexWeb.ConnCase do
   setup tags do
     Hivex.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
+
+  @doc """
+  Setup helper that registers and logs in users.
+
+      setup :register_and_log_in_user
+
+  It stores an updated connection and a registered user in the
+  test context.
+  """
+  def register_and_log_in_user(%{conn: conn} = context) do
+    user = Hivex.AccountsFixtures.user_fixture()
+    scope = Hivex.Accounts.Scope.for_user(user)
+
+    opts =
+      context
+      |> Map.take([:token_authenticated_at])
+      |> Enum.into([])
+
+    %{conn: log_in_user(conn, user, opts), user: user, scope: scope}
+  end
+
+  @doc """
+  Logs the given `user` into the `conn`.
+
+  It returns an updated `conn`.
+
+  Works only thanks to `VerifySession` in the router.
+  """
+  def log_in_user(conn, user, _opts \\ []) do
+    conn
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> Guardian.Plug.sign_in(user)
   end
 end
