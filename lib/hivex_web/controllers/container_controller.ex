@@ -6,10 +6,9 @@ defmodule HivexWeb.ContainerController do
   alias Hivex.Nginx
   alias Hivex.Containers, as: DbContainers
   alias Hivex.Containers.Container, as: DbContainer
+  alias Hivex.Helpers
 
   action_fallback HivexWeb.FallbackController
-
-  @hivex_config Application.compile_env!(:hivex, Hivex)
 
   def index(conn, _params) do
     containers = DbContainers.list_containers()
@@ -18,31 +17,20 @@ defmodule HivexWeb.ContainerController do
 
   def create(conn, %{"container" => container_params}) do
     user = Guardian.Plug.current_resource(conn)
-    nginx_network = @hivex_config[:docker_network]
     # TODO: better error handling
     container_params = Map.put(container_params, "user_id", user.id)
 
-    with {:ok, %DbContainer{} = container} <-
-           DbContainers.create_container(container_params, user),
-         {:ok, %{"Id" => container_id}} <-
-           Containers.create_container(
-             %Containers.CreateContainer{
-               Image: container.image_name,
-               NetworkingConfig: %{"EndpointsConfig" => %{nginx_network => %{}}},
-               HostConfig: %{
-                 "PortBindings" => %{
-                   container.container_port => [
-                     %{"HostIp" => "127.0.0.1", "HostPort" => container.host_port}
-                   ]
-                 }
-               },
-               Env: container_params["env"]
-             },
-             name: container.name
-           ),
-         {:ok, _} <- Containers.start_container(container_id),
-         :ok <- Nginx.update_nginx_config(),
-         do: render(conn, :show, container: container)
+    with {:ok, container} <- DbContainers.create_container(container_params, user) do
+      render(conn, :show, container: container)
+    else
+      {:error, %Ecto.Changeset{} = changeset} ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{"errors" => Helpers.format_changeset_errors(changeset)})
+
+      {:error, reason} ->
+        conn |> put_status(:internal_server_error) |> json(%{"errors" => [reason]})
+    end
   end
 
   def show(conn, %{"id" => id}) do

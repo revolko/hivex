@@ -4,10 +4,14 @@ defmodule Hivex.Containers do
   """
 
   import Ecto.Query, warn: false
+  alias Hivex.Nginx
+  alias DockerEx.Containers
   alias Hivex.Repo
 
   alias Hivex.Containers.Container
   alias Hivex.Accounts.User
+
+  @hivex_config Application.compile_env!(:hivex, Hivex)
 
   @doc """
   Return the list of containers
@@ -69,7 +73,34 @@ defmodule Hivex.Containers do
       {:error, %Ecto.Changeset{}}
   """
   def create_container(attrs, %User{} = user) do
-    %Container{} |> Container.changeset(attrs, user) |> Repo.insert()
+    nginx_network = @hivex_config[:docker_network]
+
+    Repo.transact(fn ->
+      with {:ok, container} <-
+             %Container{} |> Container.changeset(attrs, user) |> Repo.insert(),
+           {:ok, %{"Id" => container_id}} <-
+             Containers.create_container(
+               %Containers.CreateContainer{
+                 Image: container.image_name,
+                 NetworkingConfig: %{"EndpointsConfig" => %{nginx_network => %{}}},
+                 HostConfig: %{
+                   "PortBindings" => %{
+                     container.container_port => [
+                       %{"HostIp" => "127.0.0.1", "HostPort" => container.host_port}
+                     ]
+                   }
+                 },
+                 Env: attrs["env"]
+               },
+               name: container.name
+             ),
+           {:ok, _} <- Containers.start_container(container_id),
+           :ok <- Nginx.update_nginx_config() do
+        {:ok, container}
+      else
+        error -> error
+      end
+    end)
   end
 
   @doc """
