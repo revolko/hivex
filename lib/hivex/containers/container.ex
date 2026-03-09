@@ -19,6 +19,9 @@ defmodule Hivex.Containers.Container do
     container
     |> cast(attrs, [:name, :image_name, :host_port, :container_port, :proxy_port])
     |> validate_required([:name, :image_name, :host_port, :container_port, :proxy_port])
+    |> unique_constraint(:name)
+    |> unique_constraint(:host_port)
+    |> unique_constraint(:proxy_port)
     |> put_change(:user_id, user.id)
     |> assoc_constraint(:user)
   end
