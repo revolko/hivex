@@ -74,6 +74,8 @@ defmodule Hivex.Containers do
   """
   def create_container(attrs, %User{} = user) do
     nginx_network = @hivex_config[:docker_network]
+    env_vars = Map.get(attrs, "env", [])
+    binds = Map.get(attrs, "binds", [])
 
     Repo.transact(fn ->
       with {:ok, container} <-
@@ -88,9 +90,10 @@ defmodule Hivex.Containers do
                      container.container_port => [
                        %{"HostIp" => "127.0.0.1", "HostPort" => container.host_port}
                      ]
-                   }
+                   },
+                   "Binds" => binds
                  },
-                 Env: attrs["env"]
+                 Env: env_vars
                },
                name: container.name
              ),
