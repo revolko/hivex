@@ -15,7 +15,7 @@ defmodule HivexWeb.ImageController do
   def pull(conn, %{"from_image" => from_image} = params) do
     tag = Map.get(params, "tag", "latest")
     # TODO: make it async -- it takes too long
-    {:ok, _} = Images.create_image(from_image, tag)
+    {:ok, _} = Images.create_image(from_image, tag: tag)
 
     send_resp(conn, :created, "")
   end
