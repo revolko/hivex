@@ -12,6 +12,7 @@ defmodule HivexWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
   end
 
   pipeline :ensure_auth do
@@ -24,6 +25,7 @@ defmodule HivexWeb.Router do
     plug Guardian.Plug.VerifyHeader
     plug Guardian.Plug.EnsureAuthenticated
     plug Guardian.Plug.LoadResource
+    plug :assign_current_scope
   end
 
   scope "/", HivexWeb do
@@ -40,6 +42,7 @@ defmodule HivexWeb.Router do
     get "/users/settings/confirm-email/:token", UserSettingsController, :confirm_email
     delete "/users/log-out", UserSessionController, :delete
 
+    resources "/workers", WorkerController, except: [:new, :edit, :update]
     resources "/containers", ContainerController, only: [:index, :show, :create, :delete]
     resources "/images", ImageController, only: [:index]
     post "/images/pull", ImageController, :pull
@@ -85,5 +88,11 @@ defmodule HivexWeb.Router do
         basePath: "/api/v1/"
       }
     }
+  end
+
+  # custom plugs
+  defp assign_current_scope(conn, _opts) do
+    scope = Guardian.Plug.current_resource(conn) |> Hivex.Accounts.Scope.for_user()
+    assign(conn, :current_scope, scope)
   end
 end
