@@ -9,26 +9,8 @@ defmodule Hivex.Workers do
   alias Hivex.Workers.Worker
   alias Hivex.Accounts.Scope
 
-  @doc """
-  Subscribes to scoped notifications about any worker changes.
-
-  The broadcasted messages match the pattern:
-
-    * {:created, %Worker{}}
-    * {:updated, %Worker{}}
-    * {:deleted, %Worker{}}
-
-  """
-  def subscribe_workers(%Scope{} = scope) do
-    key = scope.user.id
-
-    Phoenix.PubSub.subscribe(Hivex.PubSub, "user:#{key}:workers")
-  end
-
-  defp broadcast_worker(%Scope{} = scope, message) do
-    key = scope.user.id
-
-    Phoenix.PubSub.broadcast(Hivex.PubSub, "user:#{key}:workers", message)
+  defp send_worker_message(worker_id, event, message \\ %{}) do
+    HivexWeb.Endpoint.broadcast("workers:#{worker_id}", event, message)
   end
 
   @doc """
@@ -81,7 +63,6 @@ defmodule Hivex.Workers do
            %Worker{}
            |> Worker.changeset(attrs, scope, access_key_hash)
            |> Repo.insert() do
-      broadcast_worker(scope, {:created, worker})
       {:ok, worker}
     end
   end
@@ -105,7 +86,6 @@ defmodule Hivex.Workers do
            worker
            |> Worker.changeset(attrs, scope)
            |> Repo.update() do
-      broadcast_worker(scope, {:updated, worker})
       {:ok, worker}
     end
   end
@@ -127,7 +107,7 @@ defmodule Hivex.Workers do
 
     with {:ok, worker = %Worker{}} <-
            Repo.delete(worker) do
-      broadcast_worker(scope, {:deleted, worker})
+      send_worker_message(worker.id, "disconnect")
       {:ok, worker}
     end
   end
@@ -145,6 +125,25 @@ defmodule Hivex.Workers do
     true = worker.user_id == scope.user.id
 
     Worker.changeset(worker, attrs, scope)
+  end
+
+  @doc """
+  Validates the workers access key
+
+  ## Examples
+
+      iex> is_valid_access_key?(1, "correct")
+      true
+      iex> is_valid_access_key?(1, "invalid")
+      false
+  """
+  def is_valid_access_key?(worker_id, access_key) do
+    access_key_hash = :crypto.hash(:sha256, access_key)
+
+    case Repo.get_by(Worker, id: worker_id, access_key_hash: access_key_hash) do
+      nil -> false
+      _ -> true
+    end
   end
 
   defp hash_access_key(access_key) do

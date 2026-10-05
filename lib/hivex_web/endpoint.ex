@@ -15,6 +15,11 @@ defmodule HivexWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
+  socket "/socket", HivexWeb.WorkerSocket,
+    websocket: true,
+    longpoll: false,
+    auth_token: true
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # When code reloading is disabled (e.g., in production),
